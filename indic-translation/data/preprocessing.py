@@ -11,3 +11,5 @@ def preprocessing(language='hin'):
 
     train.to_csv('train', header=False, index=False)
     valid.to_csv('valid', header=False, index=False)
+
+preprocessing()

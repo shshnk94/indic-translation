@@ -18,13 +18,3 @@ class Config:
     data: str = '../data/'
     output: str = '../output/'
     lang: str = 'hi'
-
-hin_config = Config(epochs=40, 
-                      batch_size=64, 
-                      eval_size=16, 
-                      vocab_size=25000, 
-                      embed_dim=100, 
-                      hidden_size=256, 
-                      intermediate_size=512,
-                      num_attention_heads=1, 
-                      num_hidden_layers=1)
