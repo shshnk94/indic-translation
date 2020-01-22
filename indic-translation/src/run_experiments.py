@@ -1,13 +1,15 @@
 import argparse
-import json
+import os
+from dataclasses import replace
 
 def run(args):
-    C = load_config(config_dir='.', config_name=args.config_name, update_args=args)
+        
+    import config as M
+    C = getattr(M, args.lang + '_config')
+    
+    os.system("""python train.py --data {{C.data}} --output {{C.output}} --lang {{C.lang}} --batch_size {{C.batch_size}} --eval_size {{C.eval_size}} --vocab_size {{C.vocab_size}} --embed_dim {{C.embed_dim}} --hidden_size {{C.hidden_size}} --intermediate_size {{C.intermediate_size}} --num_attention_heads {{C.num_attention_heads}} --num_hidden_layers {{C.num_hidden_layers}} --dropout_prob {{C.dropout_prob}}""")
 
-    #print (C.er.build)
-    expts = C.get_experiments()
-    dispatch_expts(expts, engine=args.engine, dry_run=args.d)
-
+    #When any new language use dataclasses.replace(C, attr=value) to create the new config instance.
 
 if __name__ == '__main__':
 
