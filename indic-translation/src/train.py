@@ -5,8 +5,8 @@ import argparse
 from time import time
 import numpy as np
 from config import Config
-from utils.modules import flat_accuracy, pad_sequence
-from utils.dataloader import IndicDataset
+from utils.modules import flat_accuracy
+from utils.dataloader import IndicDataset, PadSequence
 from translation import TranslationModel
 from transformers import BertConfig
 import torch, torch.nn as nn
@@ -25,6 +25,10 @@ def train(config, model, train_loader, eval_loader, writer=None):
     
     optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, len(train_loader), eta_min=config.lr)
+    
+    training_loss_values = []
+    validation_loss_values = []
+    validation_accuracy_values = []
 
     for epoch in range(config.epochs):
 
@@ -87,7 +91,7 @@ def train(config, model, train_loader, eval_loader, writer=None):
         avg_valid_acc = eval_accuracy/nb_eval_steps
         avg_valid_loss = eval_loss/nb_eval_steps
         validation_loss_values.append(avg_valid_loss)
-        validation_loss_values.append(avg_valid_acc)
+        validation_accuracy_values.append(avg_valid_acc)
         #writer.add_scalar('Valid/Loss', avg_valid_loss, epoch)
         #writer.add_scalar('Valid/Accuracy', avg_valid_acc, epoch)
         #writer.flush()
@@ -143,7 +147,8 @@ def build_model(config):
 def run_experiment(config):
 
     model, src_tokenizer, tgt_tokenizer = build_model(config)
-    
+   
+    pad_sequence = PadSequence(src_tokenizer.vs, tgt_tokenizer.vs)
     train_loader = DataLoader(IndicDataset(src_tokenizer, tgt_tokenizer, config.data, True), 
                               batch_size=config.batch_size, 
                               shuffle=False, 
