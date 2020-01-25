@@ -1,15 +1,13 @@
 import pandas as pd
 import numpy as np
 
-def preprocessing(language='hin'):
+def split_data(file_path, destination):
 
-    data = pd.read_csv(language + '.txt', sep='\t', header=None)[[0, 1]]
+    data = pd.read_csv(file_path, sep='\t', header=None)[[0, 1]]
 
     mask = np.random.rand(data.shape[0]) < 0.8
     train = data[mask]
     valid = data[~mask]
 
-    train.to_csv('train', header=False, index=False)
-    valid.to_csv('valid', header=False, index=False)
-
-preprocessing()
+    train.to_csv(destination + 'train', header=False, index=False)
+    valid.to_csv(destination + 'valid', header=False, index=False)
