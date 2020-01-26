@@ -145,7 +145,14 @@ def build_model(config):
     #Create encoder and decoder embedding layers.
     encoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=src_tokenizer.vs)
     decoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=tgt_tokenizer.vs)
-    model = TranslationModel(encoder_config, decoder_config, encoder_embeddings, decoder_embeddings)
+
+    encoder = BertModel(encoder_config)
+    encoder.set_input_embeddings(encoder_embeddings)
+    
+    decoder = BertForMaskedLM(decoder_config)
+    decoder.set_input_embeddings(decoder_embeddings)
+
+    model = TranslationModel(encoder, decoder)
 
     return model, src_tokenizer, tgt_tokenizer
 
