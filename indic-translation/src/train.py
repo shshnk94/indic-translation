@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 from bpemb import BPEmb
-from transformers import BertConfig
+from transformers import BertConfig, BertModel, BertForMaskedLM
 
 seed_val = 42
 np.random.seed(seed_val)
