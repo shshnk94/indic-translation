@@ -2,7 +2,7 @@
 from .config import Config
 from .translation import TranslationModel
 from ..utils.modules import flat_accuracy
-from ..utils.dataloader import IndicDataset, PadSequence
+from ..data.dataloader import IndicDataset, PadSequence
 
 import argparse
 from time import time
