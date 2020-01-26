@@ -10,7 +10,7 @@ from time import time
 import numpy as np
 import torch, torch.nn as nn
 from torch.utils.data import DataLoader
-#from torch.utils.tensorboard import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 from bpemb import BPEmb
 from transformers import BertConfig
@@ -61,8 +61,11 @@ def train(config, model, train_loader, eval_loader, writer=None):
         #Logging the loss and accuracy (below) in Tensorboard
         avg_train_loss = total_loss / len(train_loader)            
         training_loss_values.append(avg_train_loss)
-        #writer.add_scalar('Train/Loss', avg_train_loss, epoch)
-        #writer.flush()
+
+        for name, weights in model.named_parameters():
+            writer.add_histogram(name, weights, epoch)
+
+        writer.add_scalar('Train/Loss', avg_train_loss, epoch)
 
         print("Average training loss: {0:.2f}".format(avg_train_loss))
         print("Running Validation...")
@@ -93,9 +96,10 @@ def train(config, model, train_loader, eval_loader, writer=None):
         avg_valid_loss = eval_loss/nb_eval_steps
         validation_loss_values.append(avg_valid_loss)
         validation_accuracy_values.append(avg_valid_acc)
-        #writer.add_scalar('Valid/Loss', avg_valid_loss, epoch)
-        #writer.add_scalar('Valid/Accuracy', avg_valid_acc, epoch)
-        #writer.flush()
+
+        writer.add_scalar('Valid/Loss', avg_valid_loss, epoch)
+        writer.add_scalar('Valid/Accuracy', avg_valid_acc, epoch)
+        writer.flush()
 
         print("Accuracy: {0:.2f}".format(avg_valid_acc))
         print("Average validation loss: {0:.2f}".format(avg_valid_loss))
@@ -159,8 +163,7 @@ def run_experiment(config):
                              shuffle=False, 
                              collate_fn=pad_sequence)
 
-    #writer = SummaryWriter(config.output + 'logs/') 
-    writer = None
+    writer = SummaryWriter(config.output + 'logs/') 
 
     (training_loss_values, 
      validation_loss_values, 
