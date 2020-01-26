@@ -1,18 +1,19 @@
-import sys
-sys.path.append('..')
+#Relative imports
+from .config import Config
+from .translation import TranslationModel
+from ..utils.modules import flat_accuracy
+from ..utils.dataloader import IndicDataset, PadSequence
 
 import argparse
 from time import time
+
 import numpy as np
-from config import Config
-from utils.modules import flat_accuracy
-from utils.dataloader import IndicDataset, PadSequence
-from translation import TranslationModel
-from transformers import BertConfig
 import torch, torch.nn as nn
 from torch.utils.data import DataLoader
 #from torch.utils.tensorboard import SummaryWriter
+
 from bpemb import BPEmb
+from transformers import BertConfig
 
 seed_val = 42
 np.random.seed(seed_val)
@@ -167,8 +168,9 @@ def run_experiment(config):
     
     return training_loss_values, validation_loss_values, validation_accuracy_values
 
+"""
 if __name__ == '__main__':
- 
+
     hin_config = Config(epochs=40, 
                         batch_size=64, 
                         eval_size=16, 
@@ -180,3 +182,4 @@ if __name__ == '__main__':
                         num_hidden_layers=1)
 
     run_experiment(hin_config)
+"""

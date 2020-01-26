@@ -29,7 +29,7 @@ class IndicDataset(Dataset):
     def __init__(self, 
                  src_tokenizer,
                  tgt_tokenizer,
-                 filepath='../data/', 
+                 filepath,
                  is_train=True):
         filepath += 'train' if is_train else 'valid'
         self.df = pd.read_csv(filepath, header=None)

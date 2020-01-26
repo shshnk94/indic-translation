@@ -3,6 +3,9 @@ from dataclasses import dataclass
 @dataclass
 class Config:
 	
+    data: str
+    output: str
+    lang: str
     epochs: int
     batch_size: int
     eval_size: int
@@ -15,6 +18,3 @@ class Config:
     lr: float = 0.001
     hidden_act: str = 'gelu'
     dropout_prob: float = 0.1
-    data: str = '../data/'
-    output: str = '../output/'
-    lang: str = 'hi'
