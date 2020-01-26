@@ -42,12 +42,12 @@ class IndicDataset(Dataset):
 
     def __getitem__(self, index):
         y, x = self.df.loc[index]
-
+ 
         #tokenize into integer indices
-        x = self.src_tokenizer.encode_ids(x)
-        y = self.tgt_tokenizer.encode_ids(y)
+        x = self.src_tokenizer.convert_tokens_to_ids(self.src_tokenizer.tokenize(x))
+        y = self.tgt_tokenizer.convert_tokens_to_ids(self.tgt_tokenizer.tokenize(y))
 
         #add special tokens to target
-        y = [self.tgt_tokenizer.BOS] + y + [self.tgt_tokenizer.EOS]
+        y = [self.tgt_tokenizer.bos_token_id] + y + [self.tgt_tokenizer.eos_token_id]
 
         return torch.LongTensor(x), torch.LongTensor(y)

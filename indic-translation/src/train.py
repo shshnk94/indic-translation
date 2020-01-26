@@ -109,9 +109,11 @@ def train(config, model, train_loader, eval_loader, writer=None):
 
 def build_model(config):
     
-    #Create different tokenizers for both source and target language.
-    tgt_tokenizer = BPEmb(lang='en', vs=config.vocab_size, dim=config.embed_dim, add_pad_emb=True)
-    src_tokenizer = BPEmb(lang=config.lang, vs=config.vocab_size, dim=config.embed_dim, add_pad_emb=True)
+    src_tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-multilingual-cased')
+    tgt_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+    tgt_tokenizer.bos_token = '<s>'
+    tgt_tokenizer.eos_token = '</s>'
     
 	#hidden_size and intermediate_size are both wrt all the attention heads. 
     #Should be divisible by num_attention_heads
@@ -143,8 +145,8 @@ def build_model(config):
                                 is_decoder=True)
 
     #Create encoder and decoder embedding layers.
-    encoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=src_tokenizer.vs)
-    decoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=tgt_tokenizer.vs)
+    encoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=src_tokenizer.pad_token_id)
+    decoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=tgt_tokenizer.pad_token_id)
 
     encoder = BertModel(encoder_config)
     encoder.set_input_embeddings(encoder_embeddings)
@@ -159,8 +161,8 @@ def build_model(config):
 def run_experiment(config):
 
     model, src_tokenizer, tgt_tokenizer = build_model(config)
-   
-    pad_sequence = PadSequence(src_tokenizer.vs, tgt_tokenizer.vs)
+    
+    pad_sequence = PadSequence(src_tokenizer.pad_token_id, tgt_tokenizer.pad_token_id) 
     train_loader = DataLoader(IndicDataset(src_tokenizer, tgt_tokenizer, config.data, True), 
                               batch_size=config.batch_size, 
                               shuffle=False, 
