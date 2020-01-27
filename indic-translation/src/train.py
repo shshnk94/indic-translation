@@ -12,8 +12,7 @@ import torch, torch.nn as nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-from bpemb import BPEmb
-from transformers import BertConfig, BertModel, BertForMaskedLM
+from transformers import BertConfig, BertModel, BertForMaskedLM, DistilBertTokenizer, BertTokenizer
 
 seed_val = 42
 np.random.seed(seed_val)
@@ -117,7 +116,7 @@ def build_model(config):
     
 	#hidden_size and intermediate_size are both wrt all the attention heads. 
     #Should be divisible by num_attention_heads
-    encoder_config = BertConfig(vocab_size=config.vocab_size+1, #To handle UNK
+    encoder_config = BertConfig(vocab_size=src_tokenizer.vocab_size,
                                 hidden_size=config.hidden_size,
                                 num_hidden_layers=config.num_hidden_layers,
                                 num_attention_heads=config.num_attention_heads,
@@ -130,7 +129,7 @@ def build_model(config):
                                 initializer_range=0.02,
                                 layer_norm_eps=1e-12)
 
-    decoder_config = BertConfig(vocab_size=config.vocab_size+1,
+    decoder_config = BertConfig(vocab_size=tgt_tokenizer.vocab_size,
                                 hidden_size=config.hidden_size,
                                 num_hidden_layers=config.num_hidden_layers,
                                 num_attention_heads=config.num_attention_heads,
@@ -145,8 +144,8 @@ def build_model(config):
                                 is_decoder=True)
 
     #Create encoder and decoder embedding layers.
-    encoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=src_tokenizer.pad_token_id)
-    decoder_embeddings = nn.Embedding(config.vocab_size+1, config.hidden_size, padding_idx=tgt_tokenizer.pad_token_id)
+    encoder_embeddings = nn.Embedding(src_tokenizer.vocab_size, config.hidden_size, padding_idx=src_tokenizer.pad_token_id)
+    decoder_embeddings = nn.Embedding(tgt_tokenizer.vocab_size, config.hidden_size, padding_idx=tgt_tokenizer.pad_token_id)
 
     encoder = BertModel(encoder_config)
     encoder.set_input_embeddings(encoder_embeddings)

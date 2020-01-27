@@ -9,7 +9,6 @@ class Config:
     epochs: int
     batch_size: int
     eval_size: int
-    vocab_size: int
     embed_dim: int
     hidden_size: int
     intermediate_size: int
